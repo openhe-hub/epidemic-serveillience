@@ -1,13 +1,19 @@
 import json
 from utils.logger import logAfterAnalyze, logBeforeAnalyze
-from utils.value import originDict, getTime, generatedDict
+from utils.value import originDict, getTime, generatedDict, viewDict
 
 
 def output(generatedData):
     outputFile = open(f"{generatedDict}{getTime()}.json",
                       "w", encoding="utf-8")
-    jsonStr = json.dump(generatedData,outputFile,ensure_ascii=False)
+    jsonStr = json.dump(generatedData, outputFile, ensure_ascii=False)
     outputFile.close()
+
+    viewFile = open(f"{viewDict}{getTime()}.json",
+                    "w", encoding="utf-8")
+    jsonStr = json.dump(generatedData, viewFile, ensure_ascii=False)
+    viewFile.close()
+
 
 def analyze():
     logBeforeAnalyze()
@@ -28,26 +34,14 @@ def analyze():
                 "dead": data["chinaAdd"]["dead"],
             }
         },
-        "area": []
+        "name":[],
+        "value":[]
     }
 
     for province in data["areaTree"][0]["children"]:
         # area data in dict
-        areaData = {
-            "name": province["name"],
-            "today": {
-                "confirm": province["today"]["confirm"],
-            },
-            "total": {
-                "nowConfirm": province["total"]["nowConfirm"],
-                "confirm": province["total"]["confirm"],
-                "dead": province["total"]["dead"],
-                "deadRate": province["total"]["deadRate"],
-                "heal": province["total"]["heal"],
-                "healRate": province["total"]["healRate"],
-            }
-        }
-        generatedData["area"].append(areaData)
+        generatedData["name"].append(province["name"])
+        generatedData["value"].append(province["total"]["confirm"])
     file.close()
     output(generatedData)
     logAfterAnalyze()
